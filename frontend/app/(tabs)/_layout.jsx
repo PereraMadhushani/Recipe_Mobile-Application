@@ -39,6 +39,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, size }) => <Ionicons name="restaurant" size={size} color={color} />,
         }}
       />
+     
       <Tabs.Screen
         name="search"
         options={{
@@ -53,9 +54,10 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} />,
         }}
       />
+       
     </Tabs>
-  )
+  );
 
-}
+};
 
 export default TabsLayout

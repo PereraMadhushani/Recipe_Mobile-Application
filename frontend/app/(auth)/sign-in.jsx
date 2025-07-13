@@ -35,7 +35,7 @@ const SignIn = () => {
       if (signInAttempt.status === 'complete') {
         // Sign-in was successful
         await setActive({ session: signInAttempt.createdSessionId });
-        router.push('/home'); // Navigate to home screen after successful sign-in
+        // router.push('/home'); // Navigate to home screen after successful sign-in
       } else {
         // Handle other statuses like 'needs_action' or 'failed'
         Alert.alert('Sign-in required', 'Please complete the sign-in process.');
