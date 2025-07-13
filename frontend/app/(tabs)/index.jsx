@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity,  RefreshControl } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity,  RefreshControl, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { MealAPI } from "../../services/mealAPI";
@@ -6,7 +6,11 @@ import { homeStyles } from "../../assets/styles/home.styles";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import CategoryFilter from "../../components/CategoryFilter";
+import RecipeCard from "../../components/RecipeCard";
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -73,7 +77,7 @@ const HomeScreen = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // await sleep(2000);
+    await sleep(2000);
     await loadData();
     setRefreshing(false);
   };
@@ -171,6 +175,40 @@ const HomeScreen = () => {
           </View>
         )}
 
+        {categories.length > 0 && (
+            <CategoryFilter
+              categories={categories}
+                selectedCategory={selectedCategory}
+                onSelectCategory={handleCategorySelect}
+            />
+        )}
+
+        <View style={homeStyles.recipesSection}>
+            <View style={homeStyles.sectionHeader}>
+                <Text style={homeStyles.sectionTitle}>
+                    {selectedCategory}
+                </Text>
+            </View>
+
+            {recipes.length > 0 ? (
+                <FlatList
+                    data={recipes}
+                    renderItem={({item}) => <RecipeCard recipe={item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    numColumns={2}
+                    columnWrapperStyle={homeStyles.row}
+                    contentContainerStyle={homeStyles.recipesGrid}
+                    scrollEnabled={false}
+                    //ListEmptyComponent={}
+                />
+            ) : (
+                <View style={homeStyles.emptyState} >
+                    <Ionicons name="restaurant-outline" size={64} color={COLORS.textLight} />
+                    <Text style={homeStyles.emptyTitle}>No Recipes Found</Text>
+                    <Text style={homeStyles.emptyDescription}>Try a different category or check back later.</Text>
+                </View>
+            )}
+        </View>
       </ScrollView>
     </View>
   );
