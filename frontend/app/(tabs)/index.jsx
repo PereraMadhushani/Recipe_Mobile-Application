@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity,  RefreshControl, FlatList } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, FlatList, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { MealAPI } from "../../services/mealAPI";
@@ -8,9 +8,9 @@ import { COLORS } from "../../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import CategoryFilter from "../../components/CategoryFilter";
 import RecipeCard from "../../components/RecipeCard";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -77,7 +77,7 @@ const HomeScreen = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await sleep(2000);
+    // await sleep(2000);
     await loadData();
     setRefreshing(false);
   };
@@ -86,6 +86,7 @@ const HomeScreen = () => {
     loadData();
   }, []);
 
+  if (loading && !refreshing) return <LoadingSpinner message="Loading delicions recipes..." />;
 
   return (
     <View style={homeStyles.container}>
@@ -141,73 +142,69 @@ const HomeScreen = () => {
                   transition={500}
                 />
                 <View style={homeStyles.featuredOverlay}>
-                    <View style={homeStyles.featuredBadge}>
-                        <Text style={homeStyles.featuredBadgeText}>Featured</Text>
-                    </View>
+                  <View style={homeStyles.featuredBadge}>
+                    <Text style={homeStyles.featuredBadgeText}>Featured</Text>
+                  </View>
 
-                    <View style={homeStyles.featuredContent}>
-                        <Text style={homeStyles.featuredTitle} numberOfLines={2}>
-                            {featuredRecipe.title}
-                        </Text>
+                  <View style={homeStyles.featuredContent}>
+                    <Text style={homeStyles.featuredTitle} numberOfLines={2}>
+                      {featuredRecipe.title}
+                    </Text>
 
-                        <View style={homeStyles.featuredMeta}>
-                            <View style={homeStyles.metaItem}>
-                                <Ionicons name="time-outline" size={16} color={COLORS.white}/>
-                                <Text style={homeStyles.metaText}>{featuredRecipe.cookTime}</Text>
-                            </View>
-                            <View style={homeStyles.metaItem}>
-                                <Ionicons name="people-outline" size={16} color={COLORS.white}/>
-                                <Text style={homeStyles.metaText}>{featuredRecipe.servings}</Text>
-                            </View>
-                            <View style={homeStyles.metaItem}>
-                                <Ionicons name="location-outline" size={16} color={COLORS.white}/>
-                                <Text style={homeStyles.metaText}>{featuredRecipe.area}</Text>
-                            </View>
-
-
+                    <View style={homeStyles.featuredMeta}>
+                      <View style={homeStyles.metaItem}>
+                        <Ionicons name="time-outline" size={16} color={COLORS.white} />
+                        <Text style={homeStyles.metaText}>{featuredRecipe.cookTime}</Text>
+                      </View>
+                      <View style={homeStyles.metaItem}>
+                        <Ionicons name="people-outline" size={16} color={COLORS.white} />
+                        <Text style={homeStyles.metaText}>{featuredRecipe.servings}</Text>
+                      </View>
+                      {featuredRecipe.area && (
+                        <View style={homeStyles.metaItem}>
+                          <Ionicons name="location-outline" size={16} color={COLORS.white} />
+                          <Text style={homeStyles.metaText}>{featuredRecipe.area}</Text>
                         </View>
+                      )}
                     </View>
+                  </View>
                 </View>
-
-                
               </View>
             </TouchableOpacity>
           </View>
         )}
 
         {categories.length > 0 && (
-            <CategoryFilter
-              categories={categories}
-                selectedCategory={selectedCategory}
-                onSelectCategory={handleCategorySelect}
-            />
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={handleCategorySelect}
+          />
         )}
 
         <View style={homeStyles.recipesSection}>
-            <View style={homeStyles.sectionHeader}>
-                <Text style={homeStyles.sectionTitle}>
-                    {selectedCategory}
-                </Text>
-            </View>
+          <View style={homeStyles.sectionHeader}>
+            <Text style={homeStyles.sectionTitle}>{selectedCategory}</Text>
+          </View>
 
-            {recipes.length > 0 ? (
-                <FlatList
-                    data={recipes}
-                    renderItem={({item}) => <RecipeCard recipe={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    numColumns={2}
-                    columnWrapperStyle={homeStyles.row}
-                    contentContainerStyle={homeStyles.recipesGrid}
-                    scrollEnabled={false}
-                    //ListEmptyComponent={}
-                />
-            ) : (
-                <View style={homeStyles.emptyState} >
-                    <Ionicons name="restaurant-outline" size={64} color={COLORS.textLight} />
-                    <Text style={homeStyles.emptyTitle}>No Recipes Found</Text>
-                    <Text style={homeStyles.emptyDescription}>Try a different category or check back later.</Text>
-                </View>
-            )}
+          {recipes.length > 0 ? (
+            <FlatList
+              data={recipes}
+              renderItem={({ item }) => <RecipeCard recipe={item} />}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={2}
+              columnWrapperStyle={homeStyles.row}
+              contentContainerStyle={homeStyles.recipesGrid}
+              scrollEnabled={false}
+              // ListEmptyComponent={}
+            />
+          ) : (
+            <View style={homeStyles.emptyState}>
+              <Ionicons name="restaurant-outline" size={64} color={COLORS.textLight} />
+              <Text style={homeStyles.emptyTitle}>No recipes found</Text>
+              <Text style={homeStyles.emptyDescription}>Try a different category</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>
