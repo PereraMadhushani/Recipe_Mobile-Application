@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from 'react'
 import { useDebounce } from '../../hooks/useDebounce';
 import RecipeCard from '../../components/RecipeCard';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,7 +72,7 @@ const SearchScreen = () => {
     handleSearch()
   }, [debouncedSearchQuery, initialLoading]);
 
-  if(initialLoading) return <Text>Loading...</Text>
+  if(initialLoading) return <LoadingSpinner message='Loading recipes...'  size='small'/>;
 
   return(
     <View style={searchStyles.container }>
