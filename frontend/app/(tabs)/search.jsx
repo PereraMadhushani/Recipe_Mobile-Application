@@ -24,7 +24,7 @@ const SearchScreen = () => {
     }
 
     //search by name first,then by ingeredient if no result
-    const nameResults = await MealAPI.searchMealByName(query);
+    const nameResults = await MealAPI.searchMealsByName(query);
     let results =nameResults;
 
     if (results.length === 0) {
